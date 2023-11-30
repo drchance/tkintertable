@@ -172,7 +172,7 @@ class TablesApp(Frame):
         """Setup default prefs file if any of the keys are not present"""
         defaultprefs = {'textsize':14,
                          'windowwidth': 800 ,'windowheight':600}
-        for prop in defaultprefs.keys():
+        for prop in defaultprefs:
             try:
                 self.preferences.get(prop)
             except:
@@ -210,24 +210,21 @@ class TablesApp(Frame):
         return
 
     def open_project(self, filename=None):
-        if filename == None:
+        if filename is None:
             filename=tkFileDialog.askopenfilename(defaultextension='.tblprj"',
                                                       initialdir=os.getcwd(),
                                                       filetypes=[("TableApp project","*.tblprj"),
                                                                  ("All files","*.*")],
                                                       parent=self.tablesapp_win)
         if os.path.isfile(filename):
-            fd=open(filename)
-            data=pickle.load(fd)
-            fd.close()
+            with open(filename) as fd:
+                data=pickle.load(fd)
         self.new_project(data)
         self.filename=filename
         return
 
     def save_project(self):
-        if not hasattr(self, 'filename'):
-            self.save_as_project()
-        elif self.filename == None:
+        if not hasattr(self, 'filename') or self.filename is None:
             self.save_as_project()
         else:
             self.do_save_project(self.filename)
@@ -256,9 +253,8 @@ class TablesApp(Frame):
             model = currtable.getModel()
             data[s] = model.getData()
 
-        fd=open(filename,'w')
-        pickle.dump(data,fd)
-        fd.close()
+        with open(filename,'w') as fd:
+            pickle.dump(data,fd)
         return
 
     def close_project(self):
@@ -275,8 +271,7 @@ class TablesApp(Frame):
         self.tablesapp_win.wait_window(importdialog)
         model = TableModel()
         model.importDict(importer.data)
-        sheetdata = {}
-        sheetdata['sheet1'] = model.getData()
+        sheetdata = {'sheet1': model.getData()}
         self.new_project(sheetdata)
         return
 
@@ -295,10 +290,14 @@ class TablesApp(Frame):
             if self.sheets.has_key(name):
                 tkMessageBox.showwarning("Name exists", "Sheet name already exists!")
                 return 0
+
         noshts = len(self.notebook.pagenames())
-        if sheetname == None:
-            sheetname = tkSimpleDialog.askstring("New sheet name?", "Enter sheet name:",
-                                                initialvalue='sheet'+str(noshts+1))
+        if sheetname is None:
+            sheetname = tkSimpleDialog.askstring(
+                "New sheet name?",
+                "Enter sheet name:",
+                initialvalue=f'sheet{str(noshts + 1)}',
+            )
         checksheet_name(sheetname)
         page = self.notebook.add(sheetname)
         #Create the table and model if data present
@@ -327,7 +326,7 @@ class TablesApp(Frame):
     def copy_Sheet(self, newname=None):
         """Copy a sheet"""
         newdata = self.currenttable.getModel().getData().copy()
-        if newname==None:
+        if newname is None:
             self.add_Sheet(None, newdata)
         else:
             self.add_Sheet(newname, newdata)
@@ -338,7 +337,7 @@ class TablesApp(Frame):
         s = self.notebook.getcurselection()
         newname = tkSimpleDialog.askstring("New sheet name?", "Enter new sheet name:",
                                                 initialvalue=s)
-        if newname == None:
+        if newname is None:
             return
         self.copy_Sheet(newname)
         self.delete_Sheet()
@@ -487,7 +486,7 @@ class ToolBar(Frame):
         return
 
     def add_button(self, name, callback, img=None):
-        if img==None:
+        if img is None:
             b = Button(self, text=name, command=callback,
                          relief=GROOVE)
         else:

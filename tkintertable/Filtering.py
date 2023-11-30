@@ -29,7 +29,7 @@ def contains(v1,v2):
         return True
 
 def excludes(v1, v2):
-    if not v1 in v2:
+    if v1 not in v2:
         return True
 
 def equals(v1,v2):
@@ -41,14 +41,10 @@ def notequals(v1,v2):
         return True
 
 def greaterthan(v1,v2):
-    if v2>v1:
-        return True
-    return False
+    return v2 > v1
 
 def lessthan(v1,v2):
-    if v2<v1:
-        return True
-    return False
+    return v2 < v1
 
 def startswith(v1,v2):
     if v2.startswith(v1):
@@ -88,7 +84,7 @@ def doFiltering(searchfunc, filters=None):
        filters is a list of tuples of the form (key,value,operator,bool)
        returns: found record keys"""
 
-    if filters == None:
+    if filters is None:
         return
     F = filters
     sets = []
@@ -101,13 +97,12 @@ def doFiltering(searchfunc, filters=None):
         b=s[1]
         if b == 'AND':
             names = names & s[0]
-        elif b == 'OR':
-            names = names | s[0]
         elif b == 'NOT':
             names = names - s[0]
-        #print len(names)
-    names = list(names)
-    return names
+        elif b == 'OR':
+            names = names | s[0]
+            #print len(names)
+    return list(names)
 
 class FilterFrame(Frame):
 
@@ -148,9 +143,7 @@ class FilterFrame(Frame):
         return
 
     def doFiltering(self, searchfunc):
-        F=[]
-        for f in self.filters:
-            F.append(f.getFilter())
+        F = [f.getFilter() for f in self.filters]
         names = doFiltering(searchfunc, F)
         self.updateResults(len(names))
         return names
