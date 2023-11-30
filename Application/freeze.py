@@ -9,6 +9,7 @@ either windows or linux. It must be run on the target platform.
 You will need to install bbfreeze, see http://pypi.python.org/pypi/bbfreeze/
 """
 
+
 from bbfreeze import Freezer
 import sys, os, shutil
 
@@ -35,7 +36,7 @@ shutil.copy('../sample.table', 'tkintertableapp')
 
 #make zip archive
 import zipfile
-f = zipfile.ZipFile("tkintertableapp-"+version+".zip", "w")
+f = zipfile.ZipFile(f"tkintertableapp-{version}.zip", "w")
 for dirpath, dirnames, filenames in os.walk('tkintertableapp'):
     for fname in filenames:
         fullname = os.path.join(dirpath, fname)        

@@ -101,13 +101,9 @@ class Preferences:
 
         """Compile a prioritised list of all dirs"""
 
-        dirs=[]
         keys=['HOME','HOMEPATH','HOMEDRIVE']
         import os, sys
-        for key in keys:
-            if os.environ.has_key(key):
-                dirs.append(os.environ[key])
-
+        dirs = [os.environ[key] for key in keys if os.environ.has_key(key)]
         if os.environ.has_key('HOMEPATH'):
             # windows
             dirs.append(os.environ['HOMEPATH'])
@@ -117,14 +113,7 @@ class Preferences:
         for pdir in possible_dirs:
             if os.path.isdir(pdir):
                 dirs.append(pdir)
-        #
-        # Check that all dirs are real
-        #
-        rdirs=[]
-        for dirname in dirs:
-            if os.path.isdir(dirname):
-                rdirs.append(dirname)
-        return rdirs
+        return [dirname for dirname in dirs if os.path.isdir(dirname)]
 
     def load_prefs(self,filename):
         """Load prefs"""
@@ -132,14 +121,12 @@ class Preferences:
         #print "loading prefs from ",self.pref_file
         import pickle
         try:
-            fd=open(filename)
-            self.prefs=pickle.load(fd)
-            fd.close()
+            with open(filename) as fd:
+                self.prefs=pickle.load(fd)
         except:
             fd.close()
-            fd=open(filename,'rb')
-            self.prefs=pickle.load(fd)
-            fd.close()
+            with open(filename,'rb') as fd:
+                self.prefs=pickle.load(fd)
         return
 
     def save_prefs(self):

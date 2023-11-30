@@ -79,9 +79,9 @@ class pylabPlotter(object):
     def plotXY(self, x, y, title='', xlabel=None, ylabel=None, shape=None,
                             clr=None, lw=1):
         """Do x-y plot of 2 lists"""
-        if shape == None:
+        if shape is None:
             shape = self.shape
-        if clr == None:
+        if clr is None:
             clr = 'b'
         if self.xscale == 1:
             if self.yscale == 1:
@@ -119,9 +119,7 @@ class pylabPlotter(object):
         #xloc = range(len(x))
         for i in range(len(x)):
             x[i] = float(x[i]);y[i] = float(y[i])
-        plotfig = pylab.bar(x, y, color=clr, alpha=0.6)
-
-        return plotfig
+        return pylab.bar(x, y, color=clr, alpha=0.6)
 
     def doPieChart(self, data):
         """Do a pylab bar chart"""
@@ -152,10 +150,7 @@ class pylabPlotter(object):
 
     def hasData(self):
         """Is there some plot data?"""
-        if self.currdata != None and len(self.currdata) > 0:
-            return True
-        else:
-            return False
+        return self.currdata != None and len(self.currdata) > 0
 
     def setDataSeries(self, names=None, start=1):
         """Set the series names, for use in legend"""

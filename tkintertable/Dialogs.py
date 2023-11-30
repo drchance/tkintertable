@@ -44,14 +44,12 @@ class RecordViewDialog(tkSimpleDialog.Dialog):
         cols = self.recdata.keys()
         self.editable = []
         self.fieldnames = {}
-        self.fieldvars = {}
-        self.fieldvars['Name'] = StringVar()
+        self.fieldvars = {'Name': StringVar()}
         self.fieldvars['Name'].set(self.recname)
         Label(master, text='Rec Name:').grid(row=0,column=0,padx=2,pady=2,sticky='news')
         Entry(master, textvariable=self.fieldvars['Name'],
                 relief=GROOVE,bg='yellow').grid(row=0,column=1,padx=2,pady=2,sticky='news')
-        i=1
-        for col in cols:
+        for i, col in enumerate(cols, start=1):
             self.fieldvars[col] = StringVar()
             if self.recdata.has_key(col):
                 val = self.recdata[col]
@@ -59,11 +57,10 @@ class RecordViewDialog(tkSimpleDialog.Dialog):
             self.fieldnames[col] = Label(master, text=col).grid(row=i,column=0,padx=2,pady=2,sticky='news')
             ent = Entry(master, textvariable=self.fieldvars[col], relief=GROOVE,bg='white')
             ent.grid(row=i,column=1,padx=2,pady=2,sticky='news')
-            if not type(self.recdata[col]) is types.StringType:
+            if type(self.recdata[col]) is not types.StringType:
                 ent.config(state=DISABLED)
             else:
                 self.editable.append(col)
-            i+=1
         top=self.winfo_toplevel()
         top.columnconfigure(1,weight=1)
         return
@@ -79,13 +76,13 @@ class RecordViewDialog(tkSimpleDialog.Dialog):
 
         for col in range(cols):
             colname = model.getColumnName(col)
-            if not colname in self.editable:
+            if colname not in self.editable:
                 continue
             if not self.fieldvars.has_key(colname):
                 continue
             val = self.fieldvars[colname].get()
             model.setValueAt(val, absrow, col)
-            #print 'changed field', colname
+                #print 'changed field', colname
 
         self.table.redrawTable()
         return
@@ -102,19 +99,15 @@ class MultipleValDialog(tkSimpleDialog.Dialog):
 
     def body(self, master):
 
-        r=0
-        self.vrs=[];self.entries=[]
-        for i in range(len(self.labels)):
+        self.vrs=[]
+        self.entries=[]
+        for r, i in enumerate(range(len(self.labels))):
             Label(master, text=self.labels[i]).grid(row=r, column=0,sticky='news')
             if self.types[i] == 'int':
                 self.vrs.append(IntVar())
             else:
                 self.vrs.append(StringVar())
-            if self.types[i] == 'password':
-                s='*'
-            else:
-                s=None
-
+            s = '*' if self.types[i] == 'password' else None
             if self.types[i] == 'list':
                 button=Menubutton(master, textvariable=self.vrs[i],relief=RAISED)
                 menu=Menu(button,tearoff=0)
@@ -131,14 +124,11 @@ class MultipleValDialog(tkSimpleDialog.Dialog):
                 self.vrs[i].set(self.initialvalues[i])
                 self.entries.append(Entry(master, textvariable=self.vrs[i], show=s, bg='white'))
             self.entries[i].grid(row=r, column=1,padx=2,pady=2,sticky='news')
-            r+=1
-
         return self.entries[0] # initial focus
 
     def apply(self):
         self.result = True
         self.results = []
-        for i in range(len(self.labels)):
-            self.results.append(self.vrs[i].get())
+        self.results.extend(self.vrs[i].get() for i in range(len(self.labels)))
         return
 

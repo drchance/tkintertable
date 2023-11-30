@@ -46,11 +46,7 @@ class Formula(object):
     @classmethod
     def getFormula(cls, rec):
         """Get the formula field string"""
-        if not type(rec) is DictType:
-            return None
-        string = rec['formula']
-        #print string
-        return string
+        return None if type(rec) is not DictType else rec['formula']
 
     @classmethod
     def readExpression(cls, expr):
@@ -84,17 +80,13 @@ class Formula(object):
                 expr += ops.pop(0)
                 if len(vals)!=0:
                     v=vals.pop(0)
-                    if v == '':
-                        pass
-                    else:
+                    if v != '':
                         expr += str(v)
         elif len(ops)<len(vals):
             while len(vals):
                 #use lists as queues
                 v=vals.pop(0)
-                if v == '':
-                    pass
-                else:
+                if v != '':
                     expr += str(v)
                 if len(ops)!=0:
                     expr += ops.pop(0)
@@ -114,15 +106,14 @@ class Formula(object):
         for i in cells:
             if type(i) is ListType:
                 recname, col= i
-                if data.has_key(recname):
-                    if data[recname].has_key(col):
-                        v = data[recname][col]
-                        if cls.isFormula(v):
-                            #recursive
-                            v = cls.doFormula(cls.getFormula(v),data)
-                        vals.append(v)
-                    else:
-                        return ''
+                if not data.has_key(recname):
+                    return ''
+                if data[recname].has_key(col):
+                    v = data[recname][col]
+                    if cls.isFormula(v):
+                        #recursive
+                        v = cls.doFormula(cls.getFormula(v),data)
+                    vals.append(v)
                 else:
                     return ''
             elif i== '' or type(i) is IntType or type(i) is FloatType:

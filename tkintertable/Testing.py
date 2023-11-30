@@ -35,28 +35,23 @@ class App:
 def createRandomStrings(l,n):
     """create list of l random strings, each of length n"""
     names = []
-    for i in range(l):
-        val = ''.join(random.choice(string.ascii_lowercase) for x in range(n))
+    for _ in range(l):
+        val = ''.join(random.choice(string.ascii_lowercase) for _ in range(n))
         names.append(val)
     return names
 
 def createData(rows=20, cols=5):
     """Creare random dict for test data"""
 
-    data = {}
     names = createRandomStrings(rows,16)
     colnames = createRandomStrings(cols,5)
-    for n in names:
-        data[n]={}
-        data[n]['label'] = n
+    data = {n: {'label': n} for n in names}
     for c in range(0,cols):
         colname=colnames[c]
-        vals = [round(random.normalvariate(100,50),2) for i in range(0,len(names))]
+        vals = [round(random.normalvariate(100,50),2) for _ in range(0,len(names))]
         vals = sorted(vals)
-        i=0
-        for n in names:
+        for i, n in enumerate(names):
             data[n][colname] = vals[i]
-            i+=1
     return data
 
 def createTable(model):
@@ -114,8 +109,9 @@ def test2():
     t=Toplevel()
     app = App(t)
     master = app.main
-    c=0; r=1
-    for i in range(12):
+    c=0
+    r=1
+    for _ in range(12):
         model = TableModel()
         data = createData(50)
         model.importDict(data)

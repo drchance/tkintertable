@@ -152,7 +152,7 @@ class TableExporter:
                                                   filetypes=[("CSV files","*.csv")] )
         if not filename:
             return
-        if sep == None:
+        if sep is None:
             sep = ','
         writer = csv.writer(file(filename, "w"), delimiter=sep)
         model=table.getModel()
@@ -160,9 +160,7 @@ class TableExporter:
         #take column labels as field names
         colnames = model.columnNames
         collabels = model.columnlabels
-        row=[]
-        for c in colnames:
-            row.append(collabels[c])
+        row = [collabels[c] for c in colnames]
         writer.writerow(row)
         for row in recs.keys():
             writer.writerow(recs[row])
